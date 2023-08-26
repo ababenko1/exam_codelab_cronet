@@ -18,6 +18,7 @@ package com.google.codelabs.cronet
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -30,10 +31,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import com.google.codelabs.cronet.ui.theme.CronetCodelabTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 import androidx.compose.ui.unit.dp
+import com.google.android.gms.net.CronetProviderInstaller
+import com.google.codelabs.cronet.CronetCodelabConstants.LOGGER_TAG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicReference
@@ -44,7 +48,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // TODO(you): initialize Cronet provider
+
+        initCronet()
         setContent {
             CronetCodelabTheme {
                 // A surface container using the 'background' color from the theme
@@ -54,6 +59,15 @@ class MainActivity : ComponentActivity() {
                 ) {
                     MainDisplay(imageDownloader::get)
                 }
+            }
+        }
+    }
+    private fun initCronet() {
+        CronetProviderInstaller.installProvider(this).addOnCompleteListener {
+            if (it.isSuccessful) {
+                Log.i(LOGGER_TAG, "Successfully installed Play Services provider: $it")
+            } else {
+                Log.w(LOGGER_TAG, "Unable to load Cronet from Play Services", it.exception)
             }
         }
     }

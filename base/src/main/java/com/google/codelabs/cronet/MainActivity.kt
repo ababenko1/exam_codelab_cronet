@@ -66,7 +66,9 @@ class MainActivity : ComponentActivity() {
         CronetProviderInstaller.installProvider(this).addOnCompleteListener {
             if (it.isSuccessful) {
                 Log.i(LOGGER_TAG, "Successfully installed Play Services provider: $it")
-                val cronetEngine = CronetEngine.Builder(this).build()
+                val cronetEngine = CronetEngine.Builder(this)
+                    .enableHttpCache(CronetEngine.Builder.HTTP_CACHE_IN_MEMORY, 10 * 1024 * 1024)
+                    .build()
                 imageDownloader.set(CronetImageDownloader(cronetEngine))
             } else {
                 Log.w(LOGGER_TAG, "Unable to load Cronet from Play Services", it.exception)
